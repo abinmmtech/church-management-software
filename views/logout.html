@@ -4,6 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Logging Out...</title>
+    <style>
+        /* Standard blue theme styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f8fc;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #007BFF;  /* Blue color for title */
+            font-size: 20px;
+            text-align: center;
+        }
+
+        p {
+            font-size: 18px;
+            color: #333;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        /* Button style for consistency with the rest of the theme */
+        .button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 16px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+    </style>
     <script>
         // Redirect to the login page immediately when the logout page is visited
         setTimeout(() => {
@@ -12,7 +68,10 @@
     </script>
 </head>
 <body>
-    <h1>Logging out...</h1>
-    <p>You will be redirected to the login page shortly.</p>
+    <div class="container">
+        <h1>Logging out...</h1>
+        <p>You will be redirected to the login page shortly.</p>
+        <a href="/login.html" class="button">Go to Login Page Now</a>
+    </div>
 </body>
 </html>

@@ -4,29 +4,196 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
+    <style>
+        /* Blue Theme */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px; /* Set the maximum width similar to login/register */
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 17px;
+        }
+
+        table {
+            width: 100%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                font-size: 12px;
+                margin: 0;
+                padding: 0;
+            }
+
+            .container {
+                width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+
+            /* Ensure the title appears at the top of the page */
+            h2 {
+                margin-top: 0;
+                page-break-before: auto; /* Prevent page break before title */
+                page-break-after: auto; /* Prevent page break after title */
+            }
+
+            /* Table style adjustments for printing */
+            table {
+                width: 100%;
+                border: 1px solid #000;
+                border-collapse: collapse;
+                margin-top: 0;  /* Ensure no margin on top */
+                page-break-before: always;
+            }
+
+            /* Table header and body styles */
+            th, td {
+                padding: 8px;
+                border: 1px solid #ddd;
+                text-align: left;
+            }
+
+            /* Remove print buttons from the printed page */
+            .no-print {
+                display: none;
+            }
+
+            /* Prevent page break inside table rows */
+            table, tr, td {
+                page-break-inside: auto;
+            }
+
+            /* Control page breaks after each row */
+            tr {
+                page-break-after: auto;
+            }
+
+            /* Keep the table header visible on every printed page */
+            thead {
+                display: table-header-group;
+            }
+
+            tfoot {
+                display: table-footer-group; /* Optional: Keep footer on every page */
+            }
+        }
+        .links {
+            margin-top: 15px;
+        }
+        .links a {
+            color: #003366;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .logout-button {
+            background-color: #d9534f;
+            padding: 8px 12px;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background-color: #c9302c;
+        }
+    </style>
 </head>
 <body>
-    <h1>Admin Dashboard</h1>
-    <p>Welcome, Admin! Here is the list of users:</p>
-    
-    <table border="1">
-        <thead>
-            <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Mobile</th>
-                <th>Email</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- User rows will be dynamically inserted here by JavaScript -->
-        </tbody>
-    </table>
 
-    <br>
-    <a href="/logout.html">Log Out</a>
-    <a href="/dashboard.html">Back to Dashboard</a>
+    <div class="container">
+
+        <h1>User List (Admin View)</h1>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Username</th>
+                    <th>Mobile</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- User data will be populated here by JS -->
+            </tbody>
+        </table>
+        <p class="links">
+            <button class="no-print" onclick="window.location.href='/logout.html'">Log Out</button>
+            <button class="no-print" onclick="window.location.href='/dashboard.html'">Dashboard</button>
+            <button class="no-print" onclick="window.print()">Print User List</button>        
+        </p>    
+    </div>
 
     <script>
         // Assuming you have a way to identify the admin, e.g., passing the admin ID through URL
@@ -35,37 +202,35 @@
 
         // Fetch user data from the backend
         fetch('/users')
-            .then(response => response.json())
-            .then(users => {
-                const tbody = document.querySelector('table tbody');
-                users.forEach(user => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${user.first_name}</td>
-                        <td>${user.last_name}</td>
-                        <td>${user.mobile}</td>
-                        <td>${user.email || 'N/A'}</td>
-                        <td>
-                            <button onclick="deleteUser(${user.id})">Delete</button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            });
+        .then(response => response.json())
+        .then(users => {
+            const tbody = document.querySelector('table tbody');
+            
+            // Filter out the admin user by username (or modify as per your logic)
+            const filteredUsers = users.filter(user => user.username !== 'admin');  // Replace 'admin' with the admin username if needed
 
-        function deleteUser(userId) {
+            filteredUsers.forEach(user => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${user.first_name}</td>
+                    <td>${user.last_name}</td>
+                    <td>${user.username}</td>                        
+                    <td>${user.mobile}</td>
+                    <td>${user.email || 'N/A'}</td>
+                    <td>
+                        <button onclick="deleteUser('${user.username}')">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        });
+
+
+            function deleteUser(username) {
             if (confirm('Are you sure you want to delete this user?')) {
-                fetch(`/delete-user/${userId}`, { method: 'DELETE' })
-                    .then(response => {
-                        if (response.ok) {
-                            alert('User deleted successfully!');
-                            window.location.reload(); // Refresh the page to update the list
-                        } else {
-                            alert('Failed to delete user!');
-                        }
-                    });
+                window.location.href = '/delete-user/' + username;
+                    };
             }
-        }
     </script>
 </body>
 </html>

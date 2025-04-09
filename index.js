@@ -91,6 +91,7 @@ app.post('/register', async (req, res) => {
 //===============================================================================================================
 //                                  LOG IN                                          //
 //===============================================================================================================
+let isAdmin = false;
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
@@ -116,18 +117,20 @@ app.post('/login', async (req, res) => {
             return res.redirect('/login.html?error=❌ Invalid username or password.');
         }
 
-        // If login is successful, redirect to the user list page (or dashboard)
-        res.redirect('/user-list.html?success=✅ Successfully logged in.');
+        // If login is successful, check if the user is an admin
+        const isAdmin = user.rows[0].username === 'admin';  // Assuming 'admin' is the admin username
+
+        if (isAdmin) {
+            // If admin, redirect to the user list page
+            return res.redirect('/user-list.html?success=✅ Successfully logged in as Admin.');
+        } else {
+            // If not admin, redirect to a different page (e.g., dashboard)
+            return res.redirect('/dashboard.html?success=✅ Successfully logged in.');
+        }
     } catch (error) {
         console.error('Error logging in:', error);
-        res.redirect('/login.html?error=❌ An error occurred. Please try again.');
+        return res.redirect('/login.html?error=❌ An error occurred. Please try again.');
     }
-});
-
-
-// Serve the user list page
-app.get('/user-list.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'user-list.html'));
 });
 
 // Serve the dashboard (or admin) page
@@ -150,7 +153,7 @@ app.get('/user-list.html', (req, res) => {
 // Fetch all users for the admin dashboard
 app.get('/users', async (req, res) => {
     try {
-        const result = await pool.query('SELECT id, first_name, last_name, mobile, email FROM users');
+        const result = await pool.query('SELECT id, first_name, last_name, username, mobile, email FROM users');
         res.json(result.rows);
     } catch (error) {
         console.error('Error fetching users:', error);
@@ -158,21 +161,23 @@ app.get('/users', async (req, res) => {
     }
 });
 
-// Delete a user by ID
-app.delete('/delete-user/:id', async (req, res) => {
-    const { id } = req.params;
+app.get('/delete-user/:username', async (req, res) => {
+    const { username } = req.params;
 
     try {
-        // Ensure only the admin can delete users (no session or auth, so this is just for safety)
-        if (id === '1') { // Assuming '1' is the admin ID for demo purposes
-            await pool.query('DELETE FROM users WHERE id = $1', [id]);
-            res.status(200).send('User deleted successfully');
-        } else {
-            res.status(403).send('Permission denied');
+        // Delete the user from the database
+        const result = await pool.query('DELETE FROM users WHERE username = $1', [username]);
+
+        if (result.rowCount === 0) {
+            // If no rows were deleted, the user wasn't found
+            return res.redirect('/user-list.html?error=❌ User not found.');
         }
+
+        // Redirect to the user list with a success message
+        res.redirect('/user-list.html?success=✅ User deleted successfully.');
     } catch (error) {
         console.error('Error deleting user:', error);
-        res.status(500).send('Failed to delete user');
+        res.redirect('/user-list.html?error=❌ An error occurred while deleting the user.');
     }
 });
 

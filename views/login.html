@@ -75,10 +75,10 @@
     <h2>Vettithara</h2>
     <form action="/login" method="post">
       <label for="username">Username:</label>
-      <input type="text" id="username" name="username" required />
+      <input type="text" id="username" name="username" placeholder="Enter your username" autocomplete="off" required />
 
       <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required />
+      <input type="password" id="password" name="password" placeholder="Enter your username" autocomplete="off" required />
 
       <div class="actions">
         <button type="submit">Login</button>
@@ -107,7 +107,7 @@
         // Show an alert with the success message and redirect to the user list page
         setTimeout(() => {
             alert(`${successMessage}\n\nClick OK to go to the user list.`);
-            window.location.href = '/user-list.html';  // Redirect to the user list page
+            window.location.href = '/login.html';  // Redirect to the user list page
         }, 100);
     }
 </script>  
