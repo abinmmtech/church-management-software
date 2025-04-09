@@ -18,18 +18,27 @@ const pool = new Pool({
 // Middleware to parse form data
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files (CSS)
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files from 'views' folder
+app.use(express.static(path.join(__dirname, 'views')));
 
-// Serve HTML pages
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'login.html'));
 });
 
-// Serve register.html
-app.get('/register.html', (req, res) => {
-    res.sendFile(__dirname + '/views/register.html');
+// Serve the login page when navigating to '/login.html'
+app.get('/login.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'login.html'));
 });
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'register.html'));
+});
+
+// Serve the registration page when navigating to '/register.html'
+app.get('/register.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'register.html'));
+});
+
 
 // Registration route
 app.post('/register', async (req, res) => {
@@ -50,15 +59,18 @@ app.post('/register', async (req, res) => {
         res.redirect('/login.html');
     } catch (error) {
         console.error('Error registering user:', error);
-        res.render('register.html', { error: '❌ Error registering user. Please try again.' });
+        res.sendFile(path.join(__dirname, 'views', 'register.html'), {
+            error: '❌ Error registering user. Please try again.'
+        });
     }
 });
 
 
-// Serve forgot-password.html
+// Serve the registration page when navigating to '/forgot-password.html'
 app.get('/forgot-password.html', (req, res) => {
-    res.sendFile(__dirname + '/views/forgot-password.html');
+    res.sendFile(path.join(__dirname, 'views', 'forgot-password.html'));
 });
+
 // Forgot password route
 app.post('/forgot-password', async (req, res) => {
     const { username, passwordHint, newPassword } = req.body;
