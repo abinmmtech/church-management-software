@@ -17,10 +17,12 @@ const pool = new Pool({
 
 // Middleware to parse form data
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Serve static files from 'views' folder
 app.use(express.static(path.join(__dirname, 'views')));
 
+// Serve the login page when navigating to root '/'
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'login.html'));
 });
@@ -28,10 +30,6 @@ app.get('/', (req, res) => {
 // Serve the login page when navigating to '/login.html'
 app.get('/login.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'login.html'));
-});
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'register.html'));
 });
 
 // Serve the registration page when navigating to '/register.html'
@@ -42,51 +40,74 @@ app.get('/register.html', (req, res) => {
 
 // Registration route
 app.post('/register', async (req, res) => {
-    const { firstName, lastName, username, password, passwordHint, mobile, email } = req.body;
+    const { firstName, lastName, username, password, confirmPassword, passwordHint, mobile, email } = req.body;
 
-    if (!firstName || !lastName || !username || !password || !passwordHint || !mobile) {
-        return res.render('register.html', { error: '❌ All fields are required.' });
+    // Validate that all required fields are provided
+    if (!firstName || !lastName || !username || !password || !confirmPassword || !passwordHint || !mobile) {
+        return res.sendFile(path.join(__dirname, 'views', 'register.html'), {
+            error: '❌ All fields are required.',
+            firstName, lastName, username, mobile, email, passwordHint
+        });
     }
 
     // Validate mobile number (exactly 10 digits)
     const mobileRegex = /^\d{10}$/;
     if (!mobileRegex.test(mobile)) {
-        return res.redirect('/register.html?error=❌ Mobile number must be exactly 10 digits.');
+        return res.sendFile(path.join(__dirname, 'views', 'register.html'), {
+            error: '❌ Mobile number must be exactly 10 digits.',
+            firstName, lastName, username, mobile, email, passwordHint
+        });
     }
 
-    // Validate password and confirm password match
+    // Validate that password and confirm password match
     if (password !== confirmPassword) {
-        return res.redirect('/register.html?error=❌ Password and Confirm Password must match.');
+        return res.sendFile(path.join(__dirname, 'views', 'register.html'), {
+            error: '❌ Password and Confirm Password must match.',
+            firstName, lastName, username, mobile, email, passwordHint
+        });
     }
 
-    // Validate password and password hint are different
+    // Validate that password and password hint are different
     if (password === passwordHint) {
-        return res.redirect('/register.html?error=❌ Password and Password Hint cannot be the same.');
+        return res.sendFile(path.join(__dirname, 'views', 'register.html'), {
+            error: '❌ Password and Password Hint cannot be the same.',
+            firstName, lastName, username, mobile, email, passwordHint
+        });
     }
-    try {
 
+    try {
+        // Check if the username already exists in the database
         const existingUser = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
 
         if (existingUser.rows.length > 0) {
-            // If the username already exists, redirect with an error message
-            return res.redirect('/register.html?error=❌ Username already exists. Please choose a different username.');
-        }        
+            // If the username already exists, show error and retain form data
+            return res.sendFile(path.join(__dirname, 'views', 'register.html'), {
+                error: '❌ Username already exists. Please choose a different username.',
+                firstName, lastName, username, mobile, email, passwordHint
+            });
+        }
+
+        // Hash the password before storing it
         const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Insert the new user into the database
         await pool.query(
             'INSERT INTO users (first_name, last_name, username, password, password_hint, mobile, email, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP)',
             [firstName, lastName, username, hashedPassword, passwordHint, mobile, email]
         );
 
-        // Redirect to login page on successful registration
-        res.redirect('/register.html?success=✅ Registration successful! Please log in.');
+        // Redirect to the login page with a success message
+        res.redirect('/login.html?success=✅ Registration successful! Please log in.');
     } catch (error) {
         console.error('Error registering user:', error);
-        // Redirect to the registration page with an error message
-        return res.redirect('/register.html?error=❌ Error registering user. Please try again.');
+        return res.sendFile(path.join(__dirname, 'views', 'register.html'), {
+            error: '❌ Error registering user. Please try again.',
+            firstName, lastName, username, mobile, email, passwordHint
+        });
     }
 });
 
-// Serve the registration page when navigating to '/forgot-password.html'
+// Serve the forgot password page when navigating to '/forgot-password.html'
 app.get('/forgot-password.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'forgot-password.html'));
 });
