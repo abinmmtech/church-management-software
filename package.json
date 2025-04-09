@@ -18,6 +18,7 @@
   "homepage": "https://github.com/abinmmtech/church-management-software#readme",
   "description": "",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
     "pg": "^8.14.1"

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - Church Management</title>
+    <style>
+        body {
+            background-color: #e6f0ff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 255, 0.2);
+            width: 300px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #003366;
+            margin-bottom: 5px;
+        }
+
+        h3 {
+            color: #0059b3;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #003366;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-bottom: 5px;
+            color: #003366;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #b3cce6;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #0059b3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #003366;
+        }
+
+        a {
+            color: #0059b3;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Mor Michale JSO Church</h2>
+        <h3>Vettithara</h3>
+
+        <h2>Login</h2>
+        <form action="/login" method="post">
+            <label>Username:</label>
+            <input type="text" name="username" required>
+
+            <label>Password:</label>
+            <input type="password" name="password" required>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <p><a href="/register">Register</a></p>
+    </div>
+</body>
+</html>
