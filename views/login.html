@@ -89,5 +89,27 @@
       <a href="forgot-password.html">Forgot Password?</a>
     </p>
   </div>
+  <script>
+    // Get the error or success message from the query string and display it in a pop-up
+    const urlParams = new URLSearchParams(window.location.search);
+    const errorMessage = urlParams.get('error');
+    const successMessage = urlParams.get('success');
+
+    if (errorMessage) {
+        // Show an alert with the error message and a link to the register page
+        setTimeout(() => {
+            alert(`${errorMessage}\n\nClick OK to go back to the login page.`);
+            window.location.href = '/login.html';  // Redirect to the login page
+        }, 100);
+    }
+
+    if (successMessage) {
+        // Show an alert with the success message and redirect to the user list page
+        setTimeout(() => {
+            alert(`${successMessage}\n\nClick OK to go to the user list.`);
+            window.location.href = '/user-list.html';  // Redirect to the user list page
+        }, 100);
+    }
+</script>  
 </body>
 </html>

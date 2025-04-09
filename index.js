@@ -15,6 +15,7 @@ const pool = new Pool({
     port: 5432,
 });
 
+
 // Middleware to parse form data
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -87,7 +88,98 @@ app.post('/register', async (req, res) => {
     }
 });
 
+//===============================================================================================================
+//                                  LOG IN                                          //
+//===============================================================================================================
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
 
+    // Check if username and password are provided
+    if (!username || !password) {
+        return res.redirect('/login.html?error=❌ Please enter both username and password.');
+    }
+
+    try {
+        // Query the database to check if the username exists
+        const user = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+
+        if (user.rows.length === 0) {
+            // User not found
+            return res.redirect('/login.html?error=❌ Invalid username or password.');
+        }
+
+        // Compare the entered password with the stored password hash
+        const isMatch = await bcrypt.compare(password, user.rows[0].password);
+
+        if (!isMatch) {
+            // If password does not match
+            return res.redirect('/login.html?error=❌ Invalid username or password.');
+        }
+
+        // If login is successful, redirect to the user list page (or dashboard)
+        res.redirect('/user-list.html?success=✅ Successfully logged in.');
+    } catch (error) {
+        console.error('Error logging in:', error);
+        res.redirect('/login.html?error=❌ An error occurred. Please try again.');
+    }
+});
+
+
+// Serve the user list page
+app.get('/user-list.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'user-list.html'));
+});
+
+// Serve the dashboard (or admin) page
+app.get('/dashboard.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
+});
+
+
+//===============================================================================================================
+//===============================================================================================================
+
+//===============================================================================================================
+//                                                  AFTER ADMIN USER LOG IN                                          //
+//===============================================================================================================
+// Serve the admin user list page
+app.get('/user-list.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'user-list.html'));
+});
+
+// Fetch all users for the admin dashboard
+app.get('/users', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT id, first_name, last_name, mobile, email FROM users');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ error: 'Failed to fetch users' });
+    }
+});
+
+// Delete a user by ID
+app.delete('/delete-user/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // Ensure only the admin can delete users (no session or auth, so this is just for safety)
+        if (id === '1') { // Assuming '1' is the admin ID for demo purposes
+            await pool.query('DELETE FROM users WHERE id = $1', [id]);
+            res.status(200).send('User deleted successfully');
+        } else {
+            res.status(403).send('Permission denied');
+        }
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        res.status(500).send('Failed to delete user');
+    }
+});
+
+
+
+//===============================================================================================================
+//===============================================================================================================
 
 // Serve the forgot password page when navigating to '/forgot-password.html'
 app.get('/forgot-password.html', (req, res) => {
