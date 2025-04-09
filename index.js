@@ -38,41 +38,28 @@ app.get('/register.html', (req, res) => {
 });
 
 
-// Registration route
 app.post('/register', async (req, res) => {
     const { firstName, lastName, username, password, confirmPassword, passwordHint, mobile, email } = req.body;
 
     // Validate that all required fields are provided
     if (!firstName || !lastName || !username || !password || !confirmPassword || !passwordHint || !mobile) {
-        return res.sendFile(path.join(__dirname, 'views', 'register.html'), {
-            error: '❌ All fields are required.',
-            firstName, lastName, username, mobile, email, passwordHint
-        });
+        return res.redirect(`/register.html?error=❌ All fields are required.&firstName=${firstName}&lastName=${lastName}&username=${username}&mobile=${mobile}&email=${email}&passwordHint=${passwordHint}`);
     }
 
     // Validate mobile number (exactly 10 digits)
     const mobileRegex = /^\d{10}$/;
     if (!mobileRegex.test(mobile)) {
-        return res.sendFile(path.join(__dirname, 'views', 'register.html'), {
-            error: '❌ Mobile number must be exactly 10 digits.',
-            firstName, lastName, username, mobile, email, passwordHint
-        });
+        return res.redirect(`/register.html?error=❌ Mobile number must be exactly 10 digits.&firstName=${firstName}&lastName=${lastName}&username=${username}&mobile=${mobile}&email=${email}&passwordHint=${passwordHint}`);
     }
 
-    // Validate that password and confirm password match
+    // Validate password and confirm password match
     if (password !== confirmPassword) {
-        return res.sendFile(path.join(__dirname, 'views', 'register.html'), {
-            error: '❌ Password and Confirm Password must match.',
-            firstName, lastName, username, mobile, email, passwordHint
-        });
+        return res.redirect(`/register.html?error=❌ Password and Confirm Password must match.&firstName=${firstName}&lastName=${lastName}&username=${username}&mobile=${mobile}&email=${email}&passwordHint=${passwordHint}`);
     }
 
     // Validate that password and password hint are different
     if (password === passwordHint) {
-        return res.sendFile(path.join(__dirname, 'views', 'register.html'), {
-            error: '❌ Password and Password Hint cannot be the same.',
-            firstName, lastName, username, mobile, email, passwordHint
-        });
+        return res.redirect(`/register.html?error=❌ Password and Password Hint cannot be the same.&firstName=${firstName}&lastName=${lastName}&username=${username}&mobile=${mobile}&email=${email}&passwordHint=${passwordHint}`);
     }
 
     try {
@@ -80,11 +67,7 @@ app.post('/register', async (req, res) => {
         const existingUser = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
 
         if (existingUser.rows.length > 0) {
-            // If the username already exists, show error and retain form data
-            return res.sendFile(path.join(__dirname, 'views', 'register.html'), {
-                error: '❌ Username already exists. Please choose a different username.',
-                firstName, lastName, username, mobile, email, passwordHint
-            });
+            return res.redirect(`/register.html?error=❌ Username already exists.&firstName=${firstName}&lastName=${lastName}&username=${username}&mobile=${mobile}&email=${email}&passwordHint=${passwordHint}`);
         }
 
         // Hash the password before storing it
@@ -96,16 +79,15 @@ app.post('/register', async (req, res) => {
             [firstName, lastName, username, hashedPassword, passwordHint, mobile, email]
         );
 
-        // Redirect to the login page with a success message
+        // Redirect to the login page with success message
         res.redirect('/login.html?success=✅ Registration successful! Please log in.');
     } catch (error) {
         console.error('Error registering user:', error);
-        return res.sendFile(path.join(__dirname, 'views', 'register.html'), {
-            error: '❌ Error registering user. Please try again.',
-            firstName, lastName, username, mobile, email, passwordHint
-        });
+        return res.redirect(`/register.html?error=❌ Error registering user. Please try again.&firstName=${firstName}&lastName=${lastName}&username=${username}&mobile=${mobile}&email=${email}&passwordHint=${passwordHint}`);
     }
 });
+
+
 
 // Serve the forgot password page when navigating to '/forgot-password.html'
 app.get('/forgot-password.html', (req, res) => {

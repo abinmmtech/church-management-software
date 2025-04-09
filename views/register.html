@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Register - Church Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -75,15 +76,31 @@
         <h2>Church Name</h2>
         <p class="place-name">Place Name</p>
         <h3>Register</h3>
-        <form action="/register" method="POST">
-            <input type="text" name="firstName" placeholder="First Name" required>
-            <input type="text" name="lastName" placeholder="Last Name" required>
-            <input type="text" name="username" placeholder="Username" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <input type="password" name="confirmPassword" placeholder="Confirm Password" required>
-            <input type="text" name="passwordHint" placeholder="Password Hint" required>
-            <input type="text" name="mobile" placeholder="Mobile" required>
-            <input type="email" name="email" placeholder="Email" optional>
+        <form method="POST" action="/register">
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" name="firstName"><br>
+
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" name="lastName"><br>
+
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username"><br>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password"><br>
+
+            <label for="confirmPassword">Confirm Password:</label>
+            <input type="password" id="confirmPassword" name="confirmPassword"><br>
+
+            <label for="passwordHint">Password Hint:</label>
+            <input type="text" id="passwordHint" name="passwordHint"><br>
+
+            <label for="mobile">Mobile:</label>
+            <input type="text" id="mobile" name="mobile"><br>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email"><br>
+
             <button type="submit">Register</button>
         </form>
         <div class="login-link">
@@ -91,25 +108,32 @@
         </div>
     </div>
     <script>
-        // Get the error or success message from the query string and display it in a pop-up
+        // Get the query parameters from the URL
         const urlParams = new URLSearchParams(window.location.search);
+
+        // Get the error or success message from the query string
         const errorMessage = urlParams.get('error');
         const successMessage = urlParams.get('success');
 
+        // Pre-populate the form fields if values are passed in the URL
+        document.getElementById('firstName').value = urlParams.get('firstName') || '';
+        document.getElementById('lastName').value = urlParams.get('lastName') || '';
+        document.getElementById('username').value = urlParams.get('username') || '';
+        document.getElementById('mobile').value = urlParams.get('mobile') || '';
+        document.getElementById('email').value = urlParams.get('email') || '';
+        document.getElementById('passwordHint').value = urlParams.get('passwordHint') || '';
+
+        // Show error pop-up if there's an error message in the URL
         if (errorMessage) {
-            // Show an alert with the error message and a link to the register page
-            setTimeout(() => {
-                alert(`${errorMessage}\n\nClick OK to go back to the registration page.`);
-                window.location.href = '/register.html';  // Redirect to the registration page
-            }, 100);
+            alert(`${errorMessage}\n\nClick OK to go back to the registration page.`);
+            // Optionally, focus on the field causing the error (for example, username)
+            document.getElementById('username').focus();
         }
 
+        // Show success pop-up if there's a success message in the URL
         if (successMessage) {
-            // Show an alert with the success message and redirect to the login page
-            setTimeout(() => {
-                alert(`${successMessage}\n\nClick OK to go to the login page.`);
-                window.location.href = '/login.html';  // Redirect to the login page
-            }, 100);
+            alert(`${successMessage}\n\nClick OK to go to the login page.`);
+            window.location.href = '/login.html'; // Redirect to login page after success
         }
     </script>
 </body>
