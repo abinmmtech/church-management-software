@@ -1,101 +1,93 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Login - Church Management</title>
-    <style>
-        body {
-            background-color: #e6f0ff;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .container {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 255, 0.2);
-            width: 300px;
-            text-align: center;
-        }
-
-        h1 {
-            color: #003366;
-            margin-bottom: 5px;
-        }
-
-        h3 {
-            color: #0059b3;
-            margin-top: 0;
-            margin-bottom: 20px;
-        }
-
-        h2 {
-            color: #003366;
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            text-align: left;
-            margin-bottom: 5px;
-            color: #003366;
-        }
-
-        input[type="text"],
-        input[type="password"] {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 15px;
-            border: 1px solid #b3cce6;
-            border-radius: 4px;
-        }
-
-        button {
-            background-color: #0059b3;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        button:hover {
-            background-color: #003366;
-        }
-
-        a {
-            color: #0059b3;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Church Management - Login</title>
+  <style>
+    body {
+      background-color: #e6f0ff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .login-container {
+      background-color: white;
+      padding: 20px 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 255, 0.2);
+      width: 350px;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 5px;
+      color: #003366;
+    }
+    h2 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: #3366cc;
+      font-size: 16px;
+    }
+    label {
+      display: block;
+      text-align: left;
+      margin-bottom: 5px;
+      color: #003366;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #99ccff;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #3366cc;
+      color: white;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #254e8f;
+    }
+    .links {
+      margin-top: 15px;
+    }
+    .links a {
+      color: #003366;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .links a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Mor Michale JSO Church</h2>
-        <h3>Vettithara</h3>
+  <div class="login-container">
+    <h1>Mor Michael</h1>
+    <h2>Vettithara</h2>
+    <form action="/login" method="post">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required />
 
-        <h2>Login</h2>
-        <form action="/login" method="post">
-            <label>Username:</label>
-            <input type="text" name="username" required>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required />
 
-            <label>Password:</label>
-            <input type="password" name="password" required>
-
-            <button type="submit">Login</button>
-        </form>
-
-        <p><a href="/register">Register</a></p>
-    </div>
+      <div class="actions">
+        <button type="submit">Login</button>
+      </div>
+    </form>
+    <p class="links">
+      <a href="register.html">New User Registration</a> |
+      <a href="forgot-password.html">Forgot Password?</a>
+    </p>
+  </div>
 </body>
 </html>
