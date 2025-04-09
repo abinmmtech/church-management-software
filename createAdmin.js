@@ -24,10 +24,10 @@ async function createAdminUser() {
         });
 
         const result = await pool.query(
-            `INSERT INTO users (first_name, last_name, username, password, password_hint, mobile)
-             VALUES ($1, $2, $3, $4, $5, $6)
+            `INSERT INTO users (first_name, last_name, username, password, confirm_password, password_hint, mobile)
+             VALUES ($1, $2, $3, $4, $5, $6, $7)
              RETURNING *`,
-            [firstName, lastName, username, hashedPassword, passwordHint, mobile]
+            [firstName, lastName, username, hashedPassword, hashedPassword, passwordHint, mobile]
         );
 
         console.log('✅ Admin user created successfully:');

@@ -191,28 +191,53 @@ app.get('/forgot-password.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'forgot-password.html'));
 });
 
-// Forgot password route
 app.post('/forgot-password', async (req, res) => {
-    const { username, passwordHint, newPassword } = req.body;
+    let { username, password_hint, newPassword } = req.body;
 
+    // Ensure all fields are treated as strings and trimmed of any extra spaces
+    username = String(username).trim();
+    password_hint = String(password_hint).trim(); // Make sure it's a string
+    newPassword = String(newPassword).trim();
+
+    if (!username || !password_hint || !newPassword) {
+        return res.status(400).json({ success: false, message: '❌ Please provide all the required fields.' });
+    }
+
+    if (password_hint.toLowerCase() === newPassword.toLowerCase()) {
+        return res.status(400).json({ success: false, message: '❌ Password hint and new password cannot be the same.' });
+    }
+    
     try {
-        // Check user and password hint
-        const userResult = await pool.query('SELECT * FROM users WHERE username = $1 AND password_hint = $2', [username, passwordHint]);
+        // Check if the user exists
+        const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
 
-        if (userResult.rows.length === 0) {
-            return res.status(400).send('❌ Invalid username or password hint');
+        if (result.rows.length === 0) {
+            return res.status(404).json({ success: false, message: '❌ No user found with this username.' });
         }
 
+        const user = result.rows[0];
+        const userPasswordHint = user.password_hint.trim();
+        const enteredPasswordHint = password_hint.trim();
+
+        // Compare the hints in a case-insensitive manner
+        if (userPasswordHint.toLowerCase() !== enteredPasswordHint.toLowerCase()) {
+            return res.status(400).json({ success: false, message: '❌ Incorrect password hint.' });
+        }
+
+        // Hash the new password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-        await pool.query('UPDATE users SET password = $1 WHERE username = $2', [hashedPassword, username]);
+        // Update both password and confirm_password columns with the hashed password
+        await pool.query('UPDATE users SET password = $1, confirm_password = $2 WHERE username = $3', [hashedPassword, hashedPassword, username]);
 
-        res.send('✅ Password reset successful!');
+        return res.json({ success: true, message: '✅ Password reset successfully. You can now log in.' });
     } catch (error) {
         console.error('Error resetting password:', error);
-        res.status(500).send('❌ Error resetting password');
+        return res.status(500).json({ success: false, message: '❌ An error occurred. Please try again.' });
     }
 });
+
+
 
 app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
