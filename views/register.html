@@ -90,5 +90,27 @@
             <p>Already have an account? <a href="login.html">Login</a></p>
         </div>
     </div>
+    <script>
+        // Get the error or success message from the query string and display it in a pop-up
+        const urlParams = new URLSearchParams(window.location.search);
+        const errorMessage = urlParams.get('error');
+        const successMessage = urlParams.get('success');
+
+        if (errorMessage) {
+            // Show an alert with the error message and a link to the register page
+            setTimeout(() => {
+                alert(`${errorMessage}\n\nClick OK to go back to the registration page.`);
+                window.location.href = '/register.html';  // Redirect to the registration page
+            }, 100);
+        }
+
+        if (successMessage) {
+            // Show an alert with the success message and redirect to the login page
+            setTimeout(() => {
+                alert(`${successMessage}\n\nClick OK to go to the login page.`);
+                window.location.href = '/login.html';  // Redirect to the login page
+            }, 100);
+        }
+    </script>
 </body>
 </html>
