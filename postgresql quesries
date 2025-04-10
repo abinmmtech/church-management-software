@@ -1,3 +1,52 @@
+-- ==================================================================================================================================================================
+-- ==================================================================================================================================================================
+-- ==================================================================================================================================================================
+-- ==================================================================================================================================================================
+
+For login users:
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    password_hint VARCHAR(255) NOT NULL,
+    mobile VARCHAR(10) NOT NULL,
+    email VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Add triggers to update the updated_at field automatically
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_updated_at
+BEFORE UPDATE ON users
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+-- Optional indexes for faster searches
+CREATE INDEX idx_users_mobile ON users (mobile);
+CREATE INDEX idx_users_email ON users (email);
+
+
+
+
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO church_admin;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO church_admin;
+
+SELECT * FROM users;
+-- ==================================================================================================================================================================
+-- ==================================================================================================================================================================
+-- ==================================================================================================================================================================
+-- ==================================================================================================================================================================
 
 Can execute together:
 -- ================================
