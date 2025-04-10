@@ -49,56 +49,68 @@ SELECT * FROM users;
 -- ==================================================================================================================================================================
 
 Can execute together:
--- ================================
+-- ============================
 -- Table 1: Families (Family Unit)
--- ================================
+-- ============================
 
 CREATE TABLE families (
-    id SERIAL PRIMARY KEY, -- Unique family ID (auto-increment)
+    id SERIAL PRIMARY KEY, -- Unique Family ID
     church_id INTEGER NOT NULL, -- Church ID (required)
     association_id INTEGER, -- Association ID (optional)
-    address TEXT NOT NULL, -- Address (required)
-    pincode INTEGER NOT NULL, -- PINCODE (required)
+    address TEXT NOT NULL, -- Family address (required)
+    pincode INTEGER NOT NULL, -- Pincode (required)
     kudumba_unit TEXT NOT NULL, -- Kudumba Unit (required)
     ward_number TEXT, -- Ward number (optional)
     house_number TEXT, -- House number (optional)
-    hof_member_id INTEGER, -- Points to the HOF in family_members (used for HOF replacement)
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Timestamp of record creation
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Timestamp of last update
+    hof_member_id INTEGER, -- Current HOF member (links to family_members.id)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Record created time
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Last update time
 );
 
--- ================================
+-- ============================
 -- Table 2: Family Members (Individuals)
--- ================================
+-- ============================
 
 CREATE TABLE family_members (
-    id SERIAL PRIMARY KEY, -- Unique member ID (auto-increment)
-    family_id INTEGER NOT NULL REFERENCES families(id) ON DELETE CASCADE, -- Link to families table
-    name TEXT NOT NULL, -- Member Name
-    church_id INTEGER NOT NULL, -- Church ID (carried from HOF)
-    association_id INTEGER, -- Association ID (carried from HOF)
-    mobile BIGINT NOT NULL, -- Mobile number
-    address TEXT NOT NULL, -- Address (carried from HOF)
-    pincode INTEGER NOT NULL, -- PINCODE (carried from HOF)
-    kudumba_unit TEXT NOT NULL, -- Kudumba Unit (carried from HOF)
-    ward_number TEXT, -- Ward number (carried from HOF)
-    house_number TEXT, -- House number (carried from HOF)
-    gender VARCHAR(10) NOT NULL, -- Gender
-    dob DATE NOT NULL, -- Date of Birth
-    age INTEGER NOT NULL, -- Age (calculated during entry)
-    relation TEXT NOT NULL DEFAULT 'HOF', -- Relation to HOF ("HOF" for Head of Family, others for members)
-    marital_status TEXT NOT NULL, -- Marital Status
-    date_of_marriage DATE, -- Date of Marriage (optional)
+    id SERIAL PRIMARY KEY, -- Unique Member ID
+    family_id INTEGER NOT NULL REFERENCES families(id) ON DELETE CASCADE, -- Family link
+    name TEXT NOT NULL, -- Name (required)
+    church_id INTEGER NOT NULL, -- Church ID (from HOF)
+    association_id INTEGER, -- Association ID (from HOF)
+    mobile BIGINT NOT NULL, -- Mobile number (required)
+    address TEXT NOT NULL, -- Address (from HOF)
+    pincode INTEGER NOT NULL, -- Pincode (from HOF)
+    kudumba_unit TEXT NOT NULL, -- Kudumba Unit (from HOF)
+    ward_number TEXT, -- Ward number (from HOF)
+    house_number TEXT, -- House number (from HOF)
+    gender VARCHAR(10) NOT NULL, -- Gender (required)
+    dob DATE NOT NULL, -- Date of Birth (required)
+    age INTEGER NOT NULL, -- Age (calculated and stored)
+    relation VARCHAR(50) NOT NULL DEFAULT 'HOF', -- Relation (HOF or Member)
+    marital_status VARCHAR(50) NOT NULL, -- Marital status (required)
+    date_of_marriage DATE, -- Date of marriage (optional)
     baptism_name TEXT, -- Baptism Name (optional)
     date_of_baptism DATE, -- Date of Baptism (optional)
     aadhar BIGINT, -- Aadhar number (optional)
-    email TEXT, -- Email address (optional)
-    education TEXT, -- Education details (optional)
-    profession TEXT, -- Profession details (optional)
-    blood_group TEXT, -- Blood Group (optional)
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Timestamp of record creation
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Timestamp of last update
+    email TEXT, -- Email (optional)
+    education TEXT, -- Education (optional)
+    profession TEXT, -- Profession (optional)
+    blood_group VARCHAR(10), -- Blood group (optional)
+    is_hof BOOLEAN DEFAULT FALSE, -- Quick check for HOF status
+    is_alive BOOLEAN DEFAULT TRUE, -- For future HOF replacement
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Record created time
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Last update time
 );
+
+-- ============================
+-- Foreign Key constraint for HOF reference
+-- ============================
+
+ALTER TABLE families
+ADD CONSTRAINT fk_hof_member
+FOREIGN KEY (hof_member_id)
+REFERENCES family_members(id)
+ON DELETE SET NULL;
 
 -- ================================
 -- Optional: To keep data up to date, let's add triggers for updated_at
