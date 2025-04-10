@@ -5,7 +5,7 @@ const path = require('path');
 const app = express();
 const PORT = 3000;
 const { Pool } = require('pg');
-
+const bodyParser = require('body-parser');
 
 const pool = new Pool({
     user: 'church_admin',    // Replace with your Postgres username
@@ -19,6 +19,7 @@ const pool = new Pool({
 // Middleware to parse form data
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(bodyParser.json());
 
 // Serve static files from 'views' folder
 app.use(express.static(path.join(__dirname, 'views')));
